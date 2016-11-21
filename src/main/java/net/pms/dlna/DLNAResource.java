@@ -1696,7 +1696,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 
 			subtitleLanguage = "/" + media_subtitle.getLangFullName();
 			if ("/Undetermined".equals(subtitleLanguage)) {
-				subtitleLanguage = "";
+				subtitleLanguage = "/" + Messages.getString("SubTitles.UnknownShort");
 			}
 
 			String subtitlesTrackTitle = "";
@@ -1709,7 +1709,14 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 				subtitlesTrackTitle = " (" + media_subtitle.getSubtitlesTrackTitleFromMetadata() + ")";
 			}
 
-			String subsDescription = Messages.getString("DLNAResource.2") + subtitleFormat + subtitleLanguage + subtitlesTrackTitle;
+			String subsType = null;
+			if (media_subtitle.isExternal()) {
+				subsType = Messages.getString("SubTitles.ExternalShort") + " ";
+			} else if (media_subtitle.isEmbedded()) {
+				subsType = Messages.getString("SubTitles.InternalShort") + " ";
+			}
+
+			String subsDescription = subsType + Messages.getString("DLNAResource.2") + subtitleFormat + subtitleLanguage + subtitlesTrackTitle;
 			if (subsAreValidForStreaming) {
 				nameSuffix += " {" + Messages.getString("DLNAResource.3") + subsDescription + "}";
 			} else {
@@ -3356,7 +3363,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		}
 
 		if (low > 0 && media.getBitrate() > 0) {
-			lastStartPosition = (low * 8) / media.getBitrate();
+			lastStartPosition = (low * 8) / (double) media.getBitrate();
 			LOGGER.trace("Estimating seek position from byte range:");
 			LOGGER.trace("   media.getBitrate: " + media.getBitrate());
 			LOGGER.trace("   low: " + low);
@@ -3419,7 +3426,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 					resume.update((Range.Time) range, this);
 				}
 
-				params.timeseek = resume.getTimeOffset() / 1000;
+				params.timeseek = resume.getTimeOffset() / 1000d;
 				if (player == null) {
 					player = new FFMpegVideo();
 				}
@@ -3595,7 +3602,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		) {
 			Double seekPosition = (double) configurationSpecificToRenderer.getThumbnailSeekPos();
 			if (isResume()) {
-				Double resumePosition = (double) (resume.getTimeOffset() / 1000);
+				Double resumePosition = resume.getTimeOffset() / 1000d;
 
 				if (media.getDurationInSeconds() > 0 && resumePosition < media.getDurationInSeconds()) {
 					seekPosition = resumePosition;
