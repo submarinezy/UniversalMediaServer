@@ -724,7 +724,7 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 								// folder if supported/enabled and if it doesn't already exist
 								VirtualFolder transcodeFolder = getTranscodeFolder(true);
 								if (transcodeFolder != null) {
-									VirtualFolder fileTranscodeFolder = new FileTranscodeVirtualFolder(child.getDisplayName(), null);
+									VirtualFolder fileTranscodeFolder = new FileTranscodeVirtualFolder(child.getName(), null);
 
 									DLNAResource newChild = child.clone();
 									newChild.player = playerTranscoding;
@@ -1616,7 +1616,9 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 		String subtitleLanguage;
 		boolean isNamedNoEncoding = false;
 		boolean subsAreValidForStreaming = media_subtitle != null && media_subtitle.isStreamable() && mediaRenderer != null && mediaRenderer.streamSubsForTranscodedVideo();
-		if (this instanceof RealFile && !isFolder()) {
+		if (this instanceof FileTranscodeVirtualFolder) {
+			return displayName;
+		} else if (this instanceof RealFile && !isFolder()) {
 			RealFile rf = (RealFile) this;
 			if (configurationSpecificToRenderer.isPrettifyFilenames() && getFormat() != null && getFormat().isVideo()) {
 				displayName = FileUtil.getFileNamePrettified(displayName, rf.getFile());
@@ -1661,7 +1663,6 @@ public abstract class DLNAResource extends HTTPResource implements Cloneable, Ru
 			media_subtitle == null &&
 			hasExternalSubtitles() &&
 			!isNamedNoEncoding &&
-			media_subtitle == null &&
 			!configurationSpecificToRenderer.hideSubsInfo() &&
 			(
 				player == null ||
