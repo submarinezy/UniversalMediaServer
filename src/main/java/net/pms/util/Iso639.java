@@ -19,10 +19,12 @@
  */
 package net.pms.util;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map.Entry;
 import net.pms.PMS;
 import net.pms.dlna.DLNAMediaLang;
@@ -96,14 +98,10 @@ public final class Iso639 {
 	 * @param code the ISO language code.
 	 */
 	public static boolean codeIsValid(String code) {
-		if (code != null && !code.isEmpty()) {
-			for (String s : codes) {
-				if (s.equalsIgnoreCase(code)) {
-					return true;
-				}
-			}
+		if (isBlank(code)) {
+			return false;
 		}
-		return false;
+		return codes.contains(code.toLowerCase(Locale.ROOT));
 	}
 
 	/**
@@ -158,7 +156,7 @@ public final class Iso639 {
 
 		return null;
 	}
-	
+
 	/**
 	 *
 	 * Returns the ISO 639_2 code for the given language name.
@@ -176,7 +174,7 @@ public final class Iso639 {
 		if (codes != null) {
 			return codes[codes.length - 1];
 		}
-		
+
 		return null;
 	}
 
@@ -190,9 +188,8 @@ public final class Iso639 {
 	private static String normalize(String isoCode) {
 		if (LOCAL_ALIAS.equals(isoCode)) {
 			return PMS.getConfiguration().getLanguageTag();
-		} else {
-			return isoCode;
 		}
+		return isoCode;
 	}
 
 	/**

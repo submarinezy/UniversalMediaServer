@@ -181,7 +181,7 @@ public class SubtitleUtils {
 		}
 
 		String filename = isEmbeddedSource ?
-			dlna.getSystemName() : params.sid.getExternalFile().getAbsolutePath();
+			dlna.getSystemName() : params.sid.getExternalFile().getPath();
 
 		String basename;
 
@@ -200,7 +200,7 @@ public class SubtitleUtils {
 		if (applyFontConfig || isEmbeddedSource || is3D || params.sid.getType() != subtitleType) {
 			convertedSubs = new File(subsPath.getAbsolutePath() + File.separator + basename + "_ID" + params.sid.getId() + "_" + modId + "." + subtitleType.getExtension());
 		} else {
-			String tmp = params.sid.getExternalFile().getName().replaceAll("[<>:\"\\\\/|?*+\\[\\]\n\r ']", "").trim();
+			String tmp = params.sid.getName().replaceAll("[<>:\"\\\\/|?*+\\[\\]\n\r ']", "").trim();
 			convertedSubs = new File(subsPath.getAbsolutePath() + File.separator + modId + "_" + tmp);
 		}
 
@@ -623,6 +623,9 @@ public class SubtitleUtils {
 	 * @return InputStream with converted subtitles.
 	 */
 	public static InputStream removeSubRipTags(File file) throws IOException {
+		if (file == null) {
+			return null;
+		}
 		Pattern pattern = Pattern.compile("\\</?(?:b|i|s|u|font[^\\>]*)\\>|\\{\\\\.*?}|\\\\h|\\\\N");
 		try (
 			BufferedReaderDetectCharsetResult input = FileUtil.createBufferedReaderDetectCharset(file, null);

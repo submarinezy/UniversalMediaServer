@@ -1114,7 +1114,10 @@ public class FileUtil {
 								found = true;
 								if (media != null && sub != null) {
 									try {
-										sub.setExternalFile(f, forcedLang);
+										if (isNotBlank(forcedLang)) {
+											sub.setLang(forcedLang);
+										}
+										sub.setExternalFile(f);
 										media.getSubtitleTracksList().add(sub);
 									} catch (FileNotFoundException ex) {
 										LOGGER.warn("File not found during external subtitles scan: {}", ex.getMessage());
